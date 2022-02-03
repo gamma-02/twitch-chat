@@ -16,9 +16,15 @@ repositories {
 	maven { url = 'https://maven.terraformersmc.com/'}
 	maven { url 'https://jitpack.io' }
 
+
 }
 
 dependencies {
+	implementation group: 'com.github.twitch4j', name: 'twitch4j', version: '1.8.0'
+	// or using it into compile
+	api group: 'com.github.twitch4j', name: 'twitch4j', version: '1.8.0'
+	include 'com.github.philippheuer.events4j:events4j:0.9.8'
+	include 'com.github.philippheuer.credentialmanager:credentialmanager:0.1.2'
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"

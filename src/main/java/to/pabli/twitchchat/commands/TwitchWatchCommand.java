@@ -22,9 +22,9 @@ public class TwitchWatchCommand implements SubCommand {
 
               ModConfig.getConfig().setChannel(channelName);
               // Also switch channels if the bot has been initialized
-              if (TwitchChatMod.bot != null) {
+              if (TwitchChatMod.client != null) {
                 ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.watch.switching", channelName));
-                TwitchChatMod.bot.joinChannel(channelName);
+                TwitchChatMod.client.getChat().joinChannel(channelName);
               } else {
                 ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.watch.connect_on_enable", channelName));
               }

@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import to.pabli.twitchchat.TwitchChatMod;
+import to.pabli.twitchchat.config.ModConfig;
 
 public class TwitchDisableCommand implements SubCommand {
   public ArgumentBuilder<FabricClientCommandSource, ?> getArgumentBuilder() {
@@ -13,12 +14,12 @@ public class TwitchDisableCommand implements SubCommand {
         // The command to be executed if the command "twitch" is entered with the argument "disable"
         // It shuts down the irc bot.
         .executes(ctx -> {
-          if (TwitchChatMod.bot == null || !TwitchChatMod.bot.isConnected()) {
+          if (TwitchChatMod.client == null || !TwitchChatMod.client.getChat().isChannelJoined(ModConfig.getConfig().getChannel())) {
             ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.disable.already_disabled"));
-            return 1;
+            return 0;
           }
 
-          TwitchChatMod.bot.stop();
+          TwitchChatMod.client.getChat().disconnect();
           ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.disable.disabled").formatted(
               Formatting.DARK_GRAY));
 

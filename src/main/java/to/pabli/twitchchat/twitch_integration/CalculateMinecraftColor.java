@@ -9,6 +9,8 @@ import net.minecraft.util.Formatting;
 
 public class CalculateMinecraftColor {
   public static Formatting findNearestMinecraftColor(Color color) {
+    if(color == null)
+      return Formatting.WHITE;
     return Arrays.stream(Formatting.values())
         .filter(Formatting::isColor)
         .map(formatting -> {
@@ -30,6 +32,8 @@ public class CalculateMinecraftColor {
   // Code gotten from here https://discuss.dev.twitch.tv/t/default-user-color-in-chat/385/2 but a little bit adjusted.
   public static Map<String, Formatting> cachedNames = new HashMap<>();
   public static Formatting getDefaultUserColor(String username) {
+    if(username == null)
+      return Formatting.WHITE;
     if (cachedNames.containsKey(username)) {
       return cachedNames.get(username);
     } else {
