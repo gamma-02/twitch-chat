@@ -28,12 +28,12 @@ public class CalculateMinecraftColor {
   }
 
 
-  public static final Formatting[] MINECRAFT_COLORS = Arrays.stream(Formatting.values()).filter(Formatting::isColor).toArray(Formatting[]::new);
+  public static final Color[] MINECRAFT_COLORS = {(Color.RED),(Color.BLUE), Color.GREEN, new Color(0xB22222), new Color(0xFF7F50), new Color(0x9ACD32), new Color(0xFF4500), new Color(0x2E8B57), new Color(0x2E8B57), new Color(0xD2691E), new Color(0x5F9EA0), new Color(0x1E90FF), new Color(0xFF69B4), new Color(0x8A2BE2), new Color(0x00FF7F) };
   // Code gotten from here https://discuss.dev.twitch.tv/t/default-user-color-in-chat/385/2 but a little bit adjusted.
-  public static Map<String, Formatting> cachedNames = new HashMap<>();
-  public static Formatting getDefaultUserColor(String username) {
+  public static Map<String, Color> cachedNames = new HashMap<>();
+  public static Color getDefaultUserColor(String username) {
     if(username == null)
-      return Formatting.WHITE;
+      return Color.WHITE;
     if (cachedNames.containsKey(username)) {
       return cachedNames.get(username);
     } else {
@@ -42,6 +42,7 @@ public class CalculateMinecraftColor {
       char lastChar = username.charAt(username.length() - 1);
 
       int n = ((int) firstChar) + ((int) lastChar);
+      cachedNames.put(username, MINECRAFT_COLORS[n % MINECRAFT_COLORS.length]);
       return MINECRAFT_COLORS[n % MINECRAFT_COLORS.length];
     }
   }

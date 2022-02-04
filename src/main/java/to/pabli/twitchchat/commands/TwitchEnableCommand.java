@@ -1,17 +1,12 @@
 package to.pabli.twitchchat.commands;
 
-import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
-import com.github.twitch4j.TwitchClientBuilder;
-import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import to.pabli.twitchchat.TwitchChatMod;
 import to.pabli.twitchchat.config.ModConfig;
-import to.pabli.twitchchat.twitch_integration.Bot;
 
 public class TwitchEnableCommand implements SubCommand {
     public ArgumentBuilder<FabricClientCommandSource, ?> getArgumentBuilder() {

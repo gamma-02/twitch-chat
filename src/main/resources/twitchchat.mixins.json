@@ -2,10 +2,9 @@
   "required": true,
   "package": "to.pabli.twitchchat.mixin",
   "compatibilityLevel": "JAVA_16",
-  "mixins": [
-  ],
   "client": [
-    "ChatMixin"
+    "ChatMixin",
+    "DynamicTextureMixin"
   ],
   "injectors": {
     "defaultRequire": 1

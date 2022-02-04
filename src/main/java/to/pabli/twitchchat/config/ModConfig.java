@@ -26,6 +26,7 @@ public class ModConfig {
   public static final boolean DEFAULT_TWITCH_WATCH_SUGGESTIONS = false;
   public static final boolean DEFAULT_BROADCAST = false;
   public static final String DEFAULT_BROADCAST_PREFIX = "[Twitch] ";
+  public static final String DEFAULT_EMOTE_PREFIX = "§§";
 
   private static ModConfig SINGLE_INSTANCE = null;
   private final File configFile;
@@ -39,6 +40,7 @@ public class ModConfig {
   private boolean twitchWatchSuggestions;
   private boolean broadcast;
   private String broadcastPrefix;
+  private String emotePrefix = "§§";
 
   public ModConfig() {
     this.configFile = FabricLoader
@@ -55,6 +57,7 @@ public class ModConfig {
     this.twitchWatchSuggestions = DEFAULT_TWITCH_WATCH_SUGGESTIONS;
     this.broadcast = DEFAULT_BROADCAST;
     this.broadcastPrefix = DEFAULT_BROADCAST_PREFIX;
+    this.emotePrefix = DEFAULT_EMOTE_PREFIX;
   }
 
   public static ModConfig getConfig() {
@@ -82,6 +85,8 @@ public class ModConfig {
         this.prefix = jsonObject.has("prefix")
                 ? jsonObject.getAsJsonPrimitive("prefix").getAsString()
                 : DEFAULT_PREFIX;
+
+        this.emotePrefix = jsonObject.has("emotePrefix") ? jsonObject.getAsJsonPrimitive("emotePrefix").getAsString() : DEFAULT_EMOTE_PREFIX;
 
         if (jsonObject.has("ignoreList")) {
           JsonArray ignoreListJsonArray = jsonObject.getAsJsonArray("ignoreList");
@@ -114,6 +119,7 @@ public class ModConfig {
     jsonObject.addProperty("username", this.username);
     jsonObject.addProperty("oauthKey", this.oauthKey);
     jsonObject.addProperty("prefix", this.prefix);
+    jsonObject.addProperty("emotePrefix", this.emotePrefix);
 
     JsonArray ignoreListJsonArray = new JsonArray();
     for (String username : this.ignoreList) {
@@ -202,5 +208,13 @@ public class ModConfig {
 
   public void setBroadcastPrefix(String broadcastPrefix) {
     this.broadcastPrefix = broadcastPrefix;
+  }
+
+  public void setEmotePrefix(String prefix){
+    this.emotePrefix = prefix;
+  }
+
+  public String getEmotePrefix(){
+    return this.emotePrefix;
   }
 }

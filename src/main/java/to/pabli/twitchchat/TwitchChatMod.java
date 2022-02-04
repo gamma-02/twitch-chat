@@ -19,6 +19,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.MessageType;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import to.pabli.twitchchat.commands.TwitchBaseCommand;
 import to.pabli.twitchchat.config.ModConfig;
@@ -32,16 +34,14 @@ public class TwitchChatMod implements ModInitializer {
     @Override
     public void onInitialize() {
         ModConfig.getConfig().load();
-        //I'm gonna move these two at some point to up where the bot is currently done but I can't be bothered rn
-
         // Register commands
         CommandDispatcher<FabricClientCommandSource> dispatcher = ClientCommandManager.DISPATCHER;
         new TwitchBaseCommand().registerCommands(dispatcher);
     }
 
-    public static void addTwitchMessage(String time, String username, String message, Formatting textColor, boolean isMeMessage) {
+    public static void addTwitchMessage(String time, String username, String message, Color textColor, boolean isMeMessage) {
         MutableText timestampText = new LiteralText(time);
-        MutableText usernameText = new LiteralText(username).formatted(textColor);
+        MutableText usernameText = new LiteralText(username).fillStyle(Style.EMPTY.withColor(TextColor.fromRgb(textColor.getRGB())));
         MutableText messageBodyText;
 
         if (!isMeMessage) {
@@ -50,7 +50,7 @@ public class TwitchChatMod implements ModInitializer {
             // '/me' messages have the same color as the username in the Twitch website.
             // And thus I set the color of the message to be the same as the username.
             // They also don't have a colon after the username.
-            messageBodyText = new LiteralText(" " + message).formatted(textColor);
+            messageBodyText = new LiteralText(" " + message).fillStyle(Style.EMPTY.withColor(TextColor.fromRgb(textColor.getRGB())));
 
             // In Minecraft, a '/me' message is marked with a star before the name, like so:
             //
@@ -102,10 +102,9 @@ public class TwitchChatMod implements ModInitializer {
         credential = new OAuth2Credential("twitch", ModConfig.getConfig().getOauthKey());
         client = TwitchClientBuilder.builder().withEnableChat(true).withChatAccount(TwitchChatMod.credential).withEnableHelix(true).build();
         client.getEventManager().onEvent(IRCMessageEvent.class, event -> {
-            System.out.println(event.getTags().get("color") != null ? getUserColor(event) : "ajsdhalfnull");
             System.out.println(Arrays.toString(event.getTags().entrySet().toArray()));
             if(event.getUserName() != null && event.getMessage().isPresent() && event.isValid())
-                addTwitchMessage(formatDateTwitch(new Date()), event.getUserName(), event.getMessage().orElse(""), CalculateMinecraftColor.findNearestMinecraftColor(getUserColor(event)), false);
+                addTwitchMessage(formatDateTwitch(new Date()), event.getUserName(), event.getMessage().orElse(""), getUserColor(event), false);
         });
         client.getEventManager().onEvent(SubscriptionEvent.class, subscriptionEvent -> {
 //            MinecraftClient.getInstance().inGameHud
@@ -115,35 +114,33 @@ public class TwitchChatMod implements ModInitializer {
     private static Color lastValueNotNull;
     private static Color lastColor;
     public static Color getUserColor(IRCMessageEvent evt){
-        String tag = getColorTag(evt);
-        if(tag!= null) {
-            int color = Integer.decode(tag);
-            System.out.println("Integer: " + color);
-            lastValueNotNull = Color.getColor(tag);
-            return Color.getColor(tag);
-        }else {
-            return Color.getColor(CalculateMinecraftColor.getDefaultUserColor(evt.getUserName()).getColorValue().toString());
+        if(CalculateMinecraftColor.cachedNames.containsKey(evt.getUserName())){
+            return CalculateMinecraftColor.cachedNames.get(evt.getUserName());
         }
+        Color tag = getColorTag(evt.getRawTags().get("color").toString());
+        CalculateMinecraftColor.cachedNames.put(evt.getUserName(), tag);
+        return tag;
+
     }
 
-    public static String getColorTag(IRCMessageEvent evt) {
-
-        for (Object el :
-                evt.getTags().entrySet().toArray()) {
-            if (el instanceof String str) {
-                if (str.startsWith("color=")) {
-
-                    char[] token1 = str.toCharArray();
-                    char[] token2 = new char[str.length() - 7];
-                    for (int i = 0; i < token1.length - 7; i++) {
-                        token2[i] = token1[i + 7];
-                    }
-                    return String.valueOf(token2);
-                }
-
-            }
+    public static Color getColorTag(String str) {
+        char[] returnVal = new char[str.length()-1];
+        for (int i = 1; i < str.length(); i++) {
+            returnVal[i-1] = str.charAt(i);
         }
-        return null;
+        System.out.println(returnVal);
+        char[] r1 = {returnVal[0], returnVal[1]};
+        int r = Integer.parseInt(String.valueOf(r1));
+        char[] g1 = {returnVal[2], returnVal[3]};
+        int g = Integer.parseInt(String.valueOf(g1));
+        char[] b1 = {returnVal[4], returnVal[5]};
+        int b = Integer.parseInt(String.valueOf(b1));
+
+        return new Color(r, g, b);
+
+
+
+
     }
 }
 
